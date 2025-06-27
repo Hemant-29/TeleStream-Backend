@@ -4,7 +4,7 @@ const userRouter = require('./routes/user.js');
 const authRouter = require('./routes/auth.js');
 const videoRouter = require('./routes/video.js')
 const commentRouter = require('./routes/comment.js')
-const errorHandler = require('./middlewares/errorhandler.js');
+const errorHandler = require('./middlewares/errorHandler.js');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 
