@@ -15,7 +15,8 @@ const port = 5000;
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173",
+        "https://tele-stream-frontend-cq53.vercel.app"],
     credentials: true
 }));
 
