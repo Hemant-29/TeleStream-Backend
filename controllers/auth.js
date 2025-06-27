@@ -82,7 +82,7 @@ const login = async (req, res, next) => {
         const cookieOptions = {
             httpOnly: true, // Prevents client-side access to cookies
             secure: process.env.NODE_ENV === 'production', // Ensures secure cookies in production
-            sameSite: 'strict', // Helps mitigate CSRF attacks
+            sameSite: "None", // Helps send cookie to another site upon deployment
             maxAge: 7 * 24 * 60 * 60 * 1000 // Expires in 7 days
         };  // Cookie options
 
