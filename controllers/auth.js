@@ -82,7 +82,7 @@ const login = async (req, res, next) => {
         const cookieOptions = {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production', // true in production
-            sameSite: process.env.NODE_ENV === 'production' ? "None" : "Lax", 
+            sameSite: process.env.NODE_ENV === 'production' ? "None" : "Lax",
             maxAge: 7 * 24 * 60 * 60 * 1000
         };  // Cookie options
 
@@ -147,8 +147,10 @@ const logout = async (req, res, next) => {
 
         // Clear the accessToken cookie
         res.clearCookie("accessToken", {
-            path: "/",         // Make sure it clears across the entire site
-            httpOnly: true,    // Ensure the cookie was set as httpOnly
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? "None" : "Lax",
+            path: "/"
         });
 
         res.status(200).json({ msg: "User logged out successfully" })
