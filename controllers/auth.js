@@ -80,10 +80,10 @@ const login = async (req, res, next) => {
         // Set token in a cookie
 
         const cookieOptions = {
-            httpOnly: true, // Prevents client-side access to cookies
-            secure: process.env.NODE_ENV === 'production', // Ensures secure cookies in production
-            sameSite: "None", // Helps send cookie to another site upon deployment
-            maxAge: 7 * 24 * 60 * 60 * 1000 // Expires in 7 days
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', // true in production
+            sameSite: process.env.NODE_ENV === 'production' ? "None" : "Lax", 
+            maxAge: 7 * 24 * 60 * 60 * 1000
         };  // Cookie options
 
         res.cookie("accessToken", token, cookieOptions);

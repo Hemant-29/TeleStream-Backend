@@ -61,8 +61,8 @@ const getUserDetails = async (req, res, next) => {
 const updateUser = async (req, res, next) => {
     try {
         if (!req.user) {
-            next(errorResponse(401, "Error with Access Token, no user found"))
-            return
+            next(errorResponse(401, "Error with Access Token, no user found"));
+            return;
         }
 
         // Get User from user ID
@@ -72,23 +72,63 @@ const updateUser = async (req, res, next) => {
         }
 
         const allKeys = Object.keys(req.body);
+        const unchangable = [
+            "_id",
+            "subscribers",
+            "password",
+            "subscribedChannels",
+            "createdAt",
+            "updatedAt",
+            "likes",
+        ];
 
-        const unchangable = ["_id", "subscribers", "password", "createdAt", "updatedAt"]
-
-        allKeys.forEach(key => {
-            if (unchangable.includes(key)) {
-                return
+        // Check uniqueness for username, email, channel
+        if (req.body.username && req.body.username !== user.username) {
+            const existingUser = await UserModel.findOne({
+                username: req.body.username,
+                _id: { $ne: user._id },
+            });
+            if (existingUser) {
+                return next(errorResponse(400, "Username already taken"));
             }
-            return user[key] = req.body[key]
+        }
+
+        if (req.body.email && req.body.email !== user.email) {
+            const existingUser = await UserModel.findOne({
+                email: req.body.email,
+                _id: { $ne: user._id },
+            });
+            if (existingUser) {
+                return next(errorResponse(400, "Email already registered"));
+            }
+        }
+
+        if (req.body.channel && req.body.channel !== user.channel) {
+            const existingUser = await UserModel.findOne({
+                channel: req.body.channel,
+                _id: { $ne: user._id },
+            });
+            if (existingUser) {
+                return next(errorResponse(400, "Channel name already in use"));
+            }
+        }
+
+        // Update fields
+        allKeys.forEach((key) => {
+            if (unchangable.includes(key)) return;
+            user[key] = req.body[key];
         });
 
         await user.save();
 
-        res.status(200).json({ msg: "User Updated successfully", user: user })
+        res.status(200).json({
+            msg: "User updated successfully",
+            user: user,
+        });
     } catch (error) {
-        return next(error)
+        return next(error);
     }
-}
+};
 
 const deleteUser = async (req, res, next) => {
     try {
@@ -106,7 +146,7 @@ const deleteUser = async (req, res, next) => {
     }
 }
 
-// _____________________________  User Channel Operations  ____________________________
+// ___________________________  User Channel Operations  __________________________
 
 const subscribeChannel = async (req, res, next) => {
     try {
