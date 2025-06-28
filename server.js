@@ -16,6 +16,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
     origin: ["http://localhost:5173",
+        "https://tele-stream-frontend-cq53.vercel.app",
         "https://tele-stream.vercel.app/"],
     credentials: true
 }));
