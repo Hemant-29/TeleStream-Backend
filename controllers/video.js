@@ -163,9 +163,6 @@ const uploadVideo = async (req, res, next) => {
             });
         }
 
-        await safeUnlink(videoPath);
-        await safeUnlink(thumbnailPath);
-
         // Make a new Video Model
         const newVideo = new videoModel({
             userID: user._id,
