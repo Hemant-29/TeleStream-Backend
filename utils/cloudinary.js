@@ -1,5 +1,5 @@
 const cloudinary = require('cloudinary').v2;
-const fs = require('fs');
+const streamifier = require('streamifier');
 const process = require('process');
 
 // Configure Cloudinary
@@ -9,24 +9,19 @@ cloudinary.config({
     api_secret: process.env.Cloudinary_Api_Secret
 });
 
-const uploadToCloudinary = async (filePath, folder, resourceType = 'auto') => {
-    try {
-        const options = {
-            folder,
-            resource_type: resourceType,
-        };
+const uploadBufferToCloudinary = (buffer, folder, resourceType = 'auto') => {
 
-        // if (resourceType === 'video') {
-        //     // Add HLS transformation only for videos
+    return new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+            { folder, resource_type: resourceType },
+            (error, result) => {
+                if (error) reject(error);
+                else resolve(result);
+            }
+        );
+        streamifier.createReadStream(buffer).pipe(uploadStream);
+    });
 
-        // }
-        const result = await cloudinary.uploader.upload(filePath, options);
-
-        return result; // Returns uploaded file's info
-    } catch (error) {
-        console.error('Upload failed:', error);
-        throw error; // Propagate the error
-    }
 };
 
-module.exports = uploadToCloudinary
+module.exports = uploadBufferToCloudinary;

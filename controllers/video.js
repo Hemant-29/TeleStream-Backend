@@ -7,7 +7,7 @@ const cloudinary = require('cloudinary').v2;
 const errorResponse = require("../utils/errorResponse")
 const videoModel = require("../models/Video.model");
 const UserModel = require("../models/User.model");
-const uploadToCloudinary = require("../utils/cloudinary");
+const uploadBufferToCloudinary = require("../utils/cloudinary");
 const { asyncDisposeSymbol } = require("puppeteer");
 const commentModel = require("../models/Comment.model");
 
@@ -122,9 +122,9 @@ const uploadVideo = async (req, res, next) => {
             return res.status(400).json({ message: 'No thumbnail file uploaded.' });
         }
 
-        // Video and thumbnail file paths
-        const videoPath = path.join(__dirname, '..', req.files['video'][0].path);
-        const thumbnailPath = path.join(__dirname, '..', req.files['thumbnail'][0].path);
+        // Get Video and thumbnail file buffers from RAM
+        const videoBuffer = req.files['video'][0].buffer;
+        const thumbnailBuffer = req.files['thumbnail'][0].buffer;
 
         // Getting user from the User Authentication
         if (!req.user) {
@@ -142,7 +142,7 @@ const uploadVideo = async (req, res, next) => {
         // Upload video to Cloudinary
         let uploadedVideo;
         try {
-            uploadedVideo = await uploadToCloudinary(videoPath, "TeleStream_Videos", "video");
+            uploadedVideo = await uploadBufferToCloudinary(videoBuffer, "TeleStream_Videos", "video");
         } catch (error) {
             console.error('Video Upload failed:', error);
             return res.status(500).json({
@@ -155,7 +155,7 @@ const uploadVideo = async (req, res, next) => {
         // Upload thumbnail to Cloudinary
         let uploadedThumbnail;
         try {
-            uploadedThumbnail = await uploadToCloudinary(thumbnailPath, "TeleStream_Thumbnails");
+            uploadedThumbnail = await uploadBufferToCloudinary(thumbnailBuffer, "TeleStream_Thumbnails");
         } catch (error) {
             return res.status(500).json({
                 msg: "Failed to upload thumbnail to Cloud",
