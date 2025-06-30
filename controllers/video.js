@@ -81,7 +81,7 @@ const deleteVideo = async (req, res, next) => {
             return next(errorResponse(404, "Video not found"));
         }
 
-        const videoUrl = video.videoUrl;
+        const videoUrl = video.originalVideoUrl;
         const thumbnailUrl = video.thumbnailUrl;
 
         // Extract public IDs
